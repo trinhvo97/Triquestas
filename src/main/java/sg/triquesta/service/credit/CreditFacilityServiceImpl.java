@@ -5,6 +5,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
+import sg.triquesta.exception.BadRequestException;
 import sg.triquesta.model.dto.request.credit.CreditFacilityDto;
 import sg.triquesta.model.dto.request.loan.LoanTypeLimitDto;
 import sg.triquesta.model.entity.applicant.Applicant;
@@ -17,6 +18,7 @@ import sg.triquesta.service.loan.LoanLimitService;
 import sg.triquesta.service.loan.LoanTypeService;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,14 @@ public class CreditFacilityServiceImpl implements CreditFacilityService{
     @Override
     @Transactional
     public void createCreditFacility(String applicantId, CreditFacilityDto creditFacilityDto) {
+
+        BigDecimal totalLimitType = creditFacilityDto.getLoanTypeLimits()
+            .stream().map(s -> s.getLimit()).reduce(BigDecimal.valueOf(0), (x, y) -> x.add(y));
+
+        if(totalLimitType.compareTo(creditFacilityDto.getTotalLimit()) > 0){
+            throw new BadRequestException("Total amount for each loan type must be less then total amount credit facility.");
+        }
+
         Applicant applicant =applicantService.getApplicantById(applicantId);
 
         CreditFacility creditFacilityCreation = CreditFacility.builder()

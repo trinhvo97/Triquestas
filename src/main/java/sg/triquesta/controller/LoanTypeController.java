@@ -1,5 +1,6 @@
 package sg.triquesta.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ public class LoanTypeController {
 
     private final LoanTypeService loanTypeService;
 
+    @Operation(description = "Endpoint api for creating loan type like HOME, CAR or ...")
     @PostMapping("/loan-types")
     public ResponseEntity<HttpStatus> createLoanType(
             @RequestBody @Valid LoanTypeDto loanTypeDto){

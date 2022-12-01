@@ -1,5 +1,6 @@
 package sg.triquesta.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,10 @@ import javax.validation.Valid;
 public class CreditFacilityController {
     private final CreditFacilityService creditFacilityService;
 
-    @PostMapping("/applicants/{id}/credit-facilities")
+    @Operation(description = "Endpoint api for creating credit facilities of applicant")
+    @PostMapping("/credit-facilities/{applicantId}/applicants")
     public ResponseEntity<HttpStatus> createCreditFacility(
-            @PathVariable("id") String applicantId,
+            @PathVariable("applicantId") String applicantId,
             @RequestBody @Valid CreditFacilityDto creditFacility){
 
         creditFacilityService.createCreditFacility(applicantId, creditFacility);

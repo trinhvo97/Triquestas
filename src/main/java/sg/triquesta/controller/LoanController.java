@@ -1,11 +1,11 @@
 package sg.triquesta.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sg.triquesta.model.dto.request.loan.LoanDto;
-import sg.triquesta.model.dto.request.loan.LoanModifyDto;
 import sg.triquesta.service.loan.LoanService;
 import javax.validation.Valid;
 
@@ -15,21 +15,14 @@ import javax.validation.Valid;
 public class LoanController {
     private final LoanService loanService;
 
-    @PostMapping("/credit-facilities/{id}/loans")
+    @Operation(description = "Endpoint api for creating loan of applicant")
+    @PostMapping("/loans/{creditFacilityId}/credit-facilities")
     public ResponseEntity<HttpStatus> createLoan(
-            @PathVariable("id") String creditFacilityId,
+            @PathVariable("creditFacilityId") String creditFacilityId,
             @RequestBody @Valid LoanDto creditFacility){
 
         loanService.createLoan(creditFacilityId, creditFacility);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/loans/{id}")
-    public ResponseEntity<HttpStatus> createUpdateLoan(
-            @PathVariable("id") String loanId,
-            @RequestBody @Valid LoanModifyDto creditFacility){
-
-        loanService.updateLoan(loanId, creditFacility);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
 }

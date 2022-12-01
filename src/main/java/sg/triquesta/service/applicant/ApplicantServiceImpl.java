@@ -10,17 +10,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 import sg.triquesta.model.dto.request.enums.SortByApplication;
+import sg.triquesta.model.dto.response.applicant.ApplicantCurrentLoanDto;
 import sg.triquesta.model.dto.response.applicant.ApplicantResponseDto;
 import sg.triquesta.model.dto.response.applicant.ApplicantResponses;
 import sg.triquesta.model.dto.response.credit.CreditFacilityDto;
 import sg.triquesta.model.dto.response.loan.LoanDto;
 import sg.triquesta.model.entity.applicant.Applicant;
 import sg.triquesta.model.entity.credit.CreditFacility;
-import sg.triquesta.model.entity.loan.Loan;
 import sg.triquesta.model.filter.BaseFilter;
 import sg.triquesta.repository.ApplicantRepository;
 import sg.triquesta.service.credit.CreditFacilityService;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +70,6 @@ public class ApplicantServiceImpl implements ApplicantService{
 
     @Override
     public ApplicantResponseDto getApplicantByLoan(String applicantId) {
-        Applicant applicant = applicantService.getApplicantById(applicantId);
 
         List<CreditFacility> creditFacilities = creditFacilityService.findByApplicantId(applicantId);
         List<CreditFacilityDto> creditFacilitiesDto = new ArrayList<>();
@@ -85,6 +85,8 @@ public class ApplicantServiceImpl implements ApplicantService{
             creditFacilitiesDto.add(creditFacilityDto);
         });
 
+        Applicant applicant = applicantService.getApplicantById(applicantId);
+
         return ApplicantResponseDto.builder()
                 .id((applicant.getId()))
                 .name(applicant.getNameApplicant())
@@ -92,6 +94,31 @@ public class ApplicantServiceImpl implements ApplicantService{
                 .address(applicant.getAddress())
                 .mobile(applicant.getMobile())
                 .creditFacilities(creditFacilitiesDto)
+                .build();
+    }
+
+    @Override
+    public ApplicantCurrentLoanDto getTotalCurrentLoan(String applicationId) {
+
+        CreditFacility creditFacility = creditFacilityService.getCreditFacilityById(applicationId);
+        if(CollectionUtils.isEmpty(creditFacility.getLoans())){
+            return null;
+        }
+
+        BigDecimal totalAmount  = creditFacility.getLoans()
+                .stream().map(s-> s.getAmount())
+                .reduce(BigDecimal.valueOf(0), (x, y)-> x.add(y));
+
+        BigDecimal totalRemainAmount = creditFacility.getLoans()
+                .stream().map(s-> s.getRemainAmount())
+                .reduce(BigDecimal.valueOf(0), (x, y)-> x.add(y));
+
+        BigDecimal totalPaymentAmount = totalAmount.subtract(totalRemainAmount);
+
+        return ApplicantCurrentLoanDto.builder()
+                .totalAmount(totalAmount)
+                .totalPaymentAmount(totalPaymentAmount)
+                .totalRemainAmount(totalRemainAmount)
                 .build();
     }
 }
