@@ -59,17 +59,6 @@ public class LoanServiceImpl implements LoanService{
     }
 
     @Override
-    public void updateLoan(String loanId, LoanModifyDto loanModify) {
-       Loan loan =  getLoanById(loanId);
-       if(!Objects.equals(loan.getLoanStatus(), LoanStatus.COMPLETED)){
-           throw new BadRequestException("Your loan is completed");
-       }
-
-       loan.setLoanStatus(loanModify.getLoanStatus());
-       loanRepository.save(loan);
-    }
-
-    @Override
     public void saveLoan(Loan loan) {
         loanRepository.save(loan);
     }

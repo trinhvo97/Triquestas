@@ -1,5 +1,6 @@
 package sg.triquesta.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,10 @@ import javax.validation.Valid;
 public class PaymentController {
     private final LoanPaymentService loanPaymentService;
 
-    @PostMapping("/loan/{id}/payment")
+    @Operation(description = "Endpoint api that applicant can pay the loan fully/partially")
+    @PostMapping("/payment/{loanId}/loan")
     public ResponseEntity<HttpStatus> createPaymentOfApplicant(
-            @PathVariable("id") String loanId,
+            @PathVariable("loanId") String loanId,
             @RequestBody @Valid LoanPaymentDto loanPayment){
 
         loanPaymentService.paymentOfCreditFacility(loanId, loanPayment);
