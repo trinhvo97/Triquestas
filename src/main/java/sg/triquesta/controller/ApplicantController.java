@@ -4,9 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import sg.triquesta.model.dto.request.applicant.ApplicantDto;
 import sg.triquesta.model.dto.response.ApiResponse;
+import sg.triquesta.model.dto.response.applicant.ApplicantCurrentLoanDto;
+import sg.triquesta.model.dto.response.applicant.ApplicantResponseDto;
 import sg.triquesta.service.applicant.ApplicantService;
 
 import javax.validation.Valid;
@@ -26,27 +29,24 @@ public class ApplicantController {
 
     @Operation(description = "Endpoint api that applicant can see the list of loan applicant have and payment made to the loan")
     @GetMapping("/applicants/{applicantId}")
-    public ResponseEntity<ApiResponse<Object>> getLoansOfApplicant(
+    public ResponseEntity<ApiResponse<ApplicantResponseDto>> getLoansOfApplicant(
             @PathVariable("applicantId") String applicantId
     ){
-        return ResponseEntity.ok(
-            ApiResponse.builder()
-                    .data(applicantService.getApplicantByLoan(applicantId))
-                    .status(HttpStatus.OK.value())
-                    .build()
-        );
+
+        ApiResponse<Object> data = ApiResponse.builder()
+                .data(applicantService.getApplicantByLoan(applicantId))
+                .status(HttpStatus.OK.value())
+                .build();
+        return new ResponseEntity<>((MultiValueMap<String, String>) data, HttpStatus.OK);
     }
 
     @Operation(description = "Endpoint api that applicant can monitor the current total of the loans that the applicant currently has")
     @GetMapping("/applicants/{applicantId}/total-loan")
-    public ResponseEntity<ApiResponse<Object>> getCurrentTotalLoansOfApplicant(
+    public ResponseEntity<ApiResponse<ApplicantCurrentLoanDto>> getCurrentTotalLoansOfApplicant(
             @PathVariable("applicantId") String applicantId
     ){
-        return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .data(applicantService.getTotalCurrentLoan(applicantId))
-                        .status(HttpStatus.OK.value())
-                        .build()
-        );
+        ApplicantCurrentLoanDto data = applicantService.getTotalCurrentLoan(applicantId);
+
+        return new ResponseEntity<>((MultiValueMap<String, String>) data, HttpStatus.OK);
     }
 }
