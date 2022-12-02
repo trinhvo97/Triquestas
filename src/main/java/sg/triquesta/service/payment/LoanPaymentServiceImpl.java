@@ -26,10 +26,6 @@ public class LoanPaymentServiceImpl implements LoanPaymentService{
     public void paymentOfCreditFacility(String loanId, LoanPaymentDto loanPaymentDto) {
         Loan loan = loanService.getLoanById(loanId);
 
-        if(!Objects.equals(loan.getLoanStatus(), LoanStatus.COMPLETED)){
-            throw new BadRequestException("Your loan must to approval by system.");
-        }
-
         if(loanPaymentDto.getPaymentAmount().compareTo(loan.getRemainAmount()) > 0){
             throw new BadRequestException("Your payment amount must be less then or equal your remain amount.");
         }
