@@ -10,11 +10,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 import sg.triquesta.model.dto.request.enums.SortByApplication;
-import sg.triquesta.model.dto.response.applicant.ApplicantCurrentLoanDto;
-import sg.triquesta.model.dto.response.applicant.ApplicantResponseDto;
+import sg.triquesta.model.dto.response.applicant.ApplicantCurrentLoan;
+import sg.triquesta.model.dto.response.applicant.ApplicantResponse;
 import sg.triquesta.model.dto.response.applicant.ApplicantResponses;
-import sg.triquesta.model.dto.response.credit.CreditFacilityDto;
-import sg.triquesta.model.dto.response.loan.LoanDto;
+import sg.triquesta.model.dto.response.credit.CreditFacilityResponse;
+import sg.triquesta.model.dto.response.loan.LoanResponse;
 import sg.triquesta.model.entity.applicant.Applicant;
 import sg.triquesta.model.entity.credit.CreditFacility;
 import sg.triquesta.model.filter.BaseFilter;
@@ -57,7 +57,7 @@ public class ApplicantServiceImpl implements ApplicantService{
                 .page(baseFilter.getPage())
                 .size(applicants.getSize())
                 .total(applicants.getTotalElements())
-                .applicants(ApplicantResponseDto.fromApplicants(applicants.getContent()))
+                .applicants(ApplicantResponse.fromApplicants(applicants.getContent()))
                 .build();
 
     }
@@ -69,36 +69,28 @@ public class ApplicantServiceImpl implements ApplicantService{
     }
 
     @Override
-    public ApplicantResponseDto getApplicantByLoan(String applicantId) {
+    public ApplicantResponse getApplicantByLoan(String applicantId) {
+        Applicant applicant = applicantService.getApplicantById(applicantId);
 
         List<CreditFacility> creditFacilities = creditFacilityService.findByApplicantId(applicantId);
-        List<CreditFacilityDto> creditFacilitiesDto = new ArrayList<>();
+        List<CreditFacilityResponse> creditFacilitiesDto = new ArrayList<>();
 
         creditFacilities.forEach(credit -> {
-            CreditFacilityDto creditFacilityDto = CreditFacilityDto.builder()
+            CreditFacilityResponse creditFacilityDto = CreditFacilityResponse.builder()
                     .id(credit.getId())
                     .currency(credit.getCurrency())
                     .startDate(credit.getStartDate())
                     .endDate(credit.getEndDate())
-                    .loans(LoanDto.fromLoans(credit.getLoans()))
+                    .loans(LoanResponse.fromLoans(credit.getLoans()))
                     .build();
             creditFacilitiesDto.add(creditFacilityDto);
         });
 
-        Applicant applicant = applicantService.getApplicantById(applicantId);
-
-        return ApplicantResponseDto.builder()
-                .id((applicant.getId()))
-                .name(applicant.getNameApplicant())
-                .email(applicant.getEmail())
-                .address(applicant.getAddress())
-                .mobile(applicant.getMobile())
-                .creditFacilities(creditFacilitiesDto)
-                .build();
+        return ApplicantResponse.fromApplicant(applicant, creditFacilitiesDto);
     }
 
     @Override
-    public ApplicantCurrentLoanDto getTotalCurrentLoan(String applicationId) {
+    public ApplicantCurrentLoan getTotalCurrentLoan(String applicationId) {
 
         CreditFacility creditFacility = creditFacilityService.getCreditFacilityById(applicationId);
         if(CollectionUtils.isEmpty(creditFacility.getLoans())){
@@ -115,7 +107,7 @@ public class ApplicantServiceImpl implements ApplicantService{
 
         BigDecimal totalPaymentAmount = totalAmount.subtract(totalRemainAmount);
 
-        return ApplicantCurrentLoanDto.builder()
+        return ApplicantCurrentLoan.builder()
                 .totalAmount(totalAmount)
                 .totalPaymentAmount(totalPaymentAmount)
                 .totalRemainAmount(totalRemainAmount)

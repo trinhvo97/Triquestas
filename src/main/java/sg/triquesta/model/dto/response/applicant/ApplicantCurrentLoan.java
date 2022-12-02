@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @SuperBuilder
-public class ApplicantCurrentLoanDto {
+public class ApplicantCurrentLoan {
     private BigDecimal totalAmount;
 
     private BigDecimal totalPaymentAmount;

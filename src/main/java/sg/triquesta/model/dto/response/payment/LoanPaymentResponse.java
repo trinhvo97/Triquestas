@@ -15,25 +15,25 @@ import java.util.stream.Collectors;
 @Setter
 @Getter
 @Builder
-public class LoanPaymentDto {
+public class LoanPaymentResponse {
     private String id;
     private BigDecimal paymentAmount;
     private Date paymentDate;
 
-    public static LoanPaymentDto fromLoanPayment(LoanPayment loanPayment){
-        return LoanPaymentDto.builder()
+    public static LoanPaymentResponse fromLoanPayment(LoanPayment loanPayment){
+        return LoanPaymentResponse.builder()
                 .id(loanPayment.getId())
                 .paymentAmount(loanPayment.getPaymentAmount())
                 .paymentDate(loanPayment.getPaymentDate())
                 .build();
     }
 
-    public static List<LoanPaymentDto> fromLoans(List<LoanPayment> loanPayments){
+    public static List<LoanPaymentResponse> fromLoans(List<LoanPayment> loanPayments){
         if(CollectionUtils.isEmpty(loanPayments)){
             return new ArrayList<>();
         }
 
-        return loanPayments.stream().map(LoanPaymentDto::fromLoanPayment)
+        return loanPayments.stream().map(LoanPaymentResponse::fromLoanPayment)
                 .collect(Collectors.toList());
     }
 }

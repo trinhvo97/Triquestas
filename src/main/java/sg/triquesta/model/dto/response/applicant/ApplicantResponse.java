@@ -2,9 +2,8 @@ package sg.triquesta.model.dto.response.applicant;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.collections4.CollectionUtils;
-import sg.triquesta.model.dto.response.credit.CreditFacilityDto;
+import sg.triquesta.model.dto.response.credit.CreditFacilityResponse;
 import sg.triquesta.model.entity.applicant.Applicant;
-import sg.triquesta.model.entity.credit.CreditFacility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @SuperBuilder
-public class ApplicantResponseDto {
+public class ApplicantResponse {
     private String id;
 
     private String name;
@@ -26,10 +25,20 @@ public class ApplicantResponseDto {
 
     private String mobile;
 
-    private List<CreditFacilityDto> creditFacilities;
+    private List<CreditFacilityResponse> creditFacilities;
 
-    public static ApplicantResponseDto fromApplicant(Applicant applicant){
-        return ApplicantResponseDto.builder()
+    public static ApplicantResponse fromApplicant(Applicant applicant, List<CreditFacilityResponse> creditFacilities){
+        return ApplicantResponse.builder()
+                .id(applicant.getId())
+                .name(applicant.getNameApplicant())
+                .email(applicant.getEmail())
+                .mobile(applicant.getMobile())
+                .creditFacilities(creditFacilities)
+                .build();
+    }
+
+    public static ApplicantResponse fromApplicant(Applicant applicant){
+        return ApplicantResponse.builder()
                 .id(applicant.getId())
                 .name(applicant.getNameApplicant())
                 .email(applicant.getEmail())
@@ -37,13 +46,13 @@ public class ApplicantResponseDto {
                 .build();
     }
 
-    public static List<ApplicantResponseDto> fromApplicants(List<Applicant> applicants){
+    public static List<ApplicantResponse> fromApplicants(List<Applicant> applicants){
         if(CollectionUtils.isEmpty(applicants)){
             return new ArrayList<>();
         }
 
         return applicants.stream()
-                .map(ApplicantResponseDto::fromApplicant)
+                .map(ApplicantResponse::fromApplicant)
                 .collect(Collectors.toList());
     }
 }

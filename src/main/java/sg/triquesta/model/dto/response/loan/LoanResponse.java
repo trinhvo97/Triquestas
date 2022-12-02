@@ -2,7 +2,7 @@ package sg.triquesta.model.dto.response.loan;
 
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
-import sg.triquesta.model.dto.response.payment.LoanPaymentDto;
+import sg.triquesta.model.dto.response.payment.LoanPaymentResponse;
 import sg.triquesta.model.entity.enums.Currency;
 import sg.triquesta.model.entity.enums.LoanStatus;
 import sg.triquesta.model.entity.loan.Loan;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Setter
 @Getter
 @Builder
-public class LoanDto {
+public class LoanResponse {
     private String id;
     private BigDecimal amount;
     private BigDecimal remainAmount;
@@ -27,10 +27,10 @@ public class LoanDto {
     private Double interestRate;
     private Date startDate;
     private Date endDate;
-    private List<LoanPaymentDto> loanPayments;
+    private List<LoanPaymentResponse> loanPayments;
 
-    public static LoanDto fromLoan(Loan loan){
-        return LoanDto.builder()
+    public static LoanResponse fromLoan(Loan loan){
+        return LoanResponse.builder()
                 .id(loan.getId())
                 .amount(loan.getAmount())
                 .remainAmount(loan.getRemainAmount())
@@ -39,16 +39,16 @@ public class LoanDto {
                 .interestRate(loan.getInterestRate())
                 .startDate(loan.getStartDate())
                 .endDate(loan.getEndDate())
-                .loanPayments(LoanPaymentDto.fromLoans(loan.getLoanPayments()))
+                .loanPayments(LoanPaymentResponse.fromLoans(loan.getLoanPayments()))
                 .build();
     }
 
-    public static List<LoanDto> fromLoans(List<Loan> loans){
+    public static List<LoanResponse> fromLoans(List<Loan> loans){
         if(CollectionUtils.isEmpty(loans)){
             return new ArrayList<>();
         }
 
-        return loans.stream().map(LoanDto::fromLoan).collect(Collectors.toList());
+        return loans.stream().map(LoanResponse::fromLoan).collect(Collectors.toList());
     }
 
 }

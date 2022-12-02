@@ -15,5 +15,5 @@ import java.util.List;
 @Setter
 @SuperBuilder
 public class ApplicantResponses extends PaginationResponseDto {
-    List<ApplicantResponseDto> applicants;
+    List<ApplicantResponse> applicants;
 }

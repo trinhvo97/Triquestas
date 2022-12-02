@@ -22,7 +22,7 @@ public class LoanDto {
     @Min(1)
     private BigDecimal remainAmount;
 
-    private Boolean isCompleted = false;
+    private Boolean isCompleted;
 
     @NotBlank
     @NotEmpty(message = "currency cannot be empty.")
