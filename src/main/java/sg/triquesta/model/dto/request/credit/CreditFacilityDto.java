@@ -23,7 +23,7 @@ public class CreditFacilityDto {
 
     @NotBlank
     @NotEmpty(message = "currency cannot be empty.")
-    private Currency currency;
+    private String currency;
 
     @NonNull
     private Date startDate;

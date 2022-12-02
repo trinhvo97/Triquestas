@@ -5,17 +5,16 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 import sg.triquesta.exception.BadRequestException;
 import sg.triquesta.model.dto.request.loan.LoanDto;
-import sg.triquesta.model.dto.request.loan.LoanModifyDto;
 import sg.triquesta.model.entity.credit.CreditFacility;
+import sg.triquesta.model.entity.enums.Currency;
 import sg.triquesta.model.entity.enums.LoanStatus;
 import sg.triquesta.model.entity.loan.Loan;
 import sg.triquesta.model.entity.loan.LoanLimit;
 import sg.triquesta.model.entity.loan.LoanType;
 import sg.triquesta.repository.LoanRepository;
 import sg.triquesta.service.credit.CreditFacilityService;
-
 import javax.transaction.Transactional;
-import java.util.Objects;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +39,7 @@ public class LoanServiceImpl implements LoanService{
                 .isCompleted(false)
                 .remainAmount(loanDto.getAmount())
                 .amount(loanDto.getAmount())
-                .currency(loanDto.getCurrency())
+                .currency(Currency.valueOf(loanDto.getCurrency()))
                 .interestRate(loanDto.getInterestRate())
                 .startDate(loanDto.getStartDate())
                 .endDate(loanDto.getEndDate())
@@ -61,5 +60,10 @@ public class LoanServiceImpl implements LoanService{
     @Override
     public void saveLoan(Loan loan) {
         loanRepository.save(loan);
+    }
+
+    @Override
+    public List<Loan> getLoanByCreditFacilityIds(List<String> creditFacilityIds) {
+        return loanRepository.findByCreditFacility_IdIn(creditFacilityIds);
     }
 }
