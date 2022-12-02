@@ -19,14 +19,9 @@ public class LoanDto {
     @Min(1)
     private BigDecimal amount;
 
-    @Min(1)
-    private BigDecimal remainAmount;
-
-    private Boolean isCompleted;
-
     @NotBlank
     @NotEmpty(message = "currency cannot be empty.")
-    private Currency currency;
+    private String currency;
 
     @DecimalMin("0.0")
     private Double interestRate;

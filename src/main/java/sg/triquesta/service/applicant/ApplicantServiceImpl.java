@@ -17,13 +17,16 @@ import sg.triquesta.model.dto.response.credit.CreditFacilityResponse;
 import sg.triquesta.model.dto.response.loan.LoanResponse;
 import sg.triquesta.model.entity.applicant.Applicant;
 import sg.triquesta.model.entity.credit.CreditFacility;
+import sg.triquesta.model.entity.loan.Loan;
 import sg.triquesta.model.filter.BaseFilter;
 import sg.triquesta.repository.ApplicantRepository;
 import sg.triquesta.service.credit.CreditFacilityService;
+import sg.triquesta.service.loan.LoanService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Lazy))
@@ -32,6 +35,7 @@ public class ApplicantServiceImpl implements ApplicantService{
     private final ApplicantRepository applicantRepository;
     private final CreditFacilityService creditFacilityService;
     private final ApplicantService applicantService;
+    private final LoanService loanService;
 
     @Override
     public void saveApplicant(sg.triquesta.model.dto.request.applicant.ApplicantDto applicantDto) {
@@ -92,16 +96,20 @@ public class ApplicantServiceImpl implements ApplicantService{
     @Override
     public ApplicantCurrentLoan getTotalCurrentLoan(String applicationId) {
 
-        CreditFacility creditFacility = creditFacilityService.getCreditFacilityById(applicationId);
-        if(CollectionUtils.isEmpty(creditFacility.getLoans())){
+        List<CreditFacility> creditFacilities= creditFacilityService.findByApplicantId(applicationId);
+
+        if(CollectionUtils.isEmpty(creditFacilities)){
             return null;
         }
 
-        BigDecimal totalAmount  = creditFacility.getLoans()
+        List<String> creditFacilityIds = creditFacilities.stream().map(s -> s.getId()).collect(Collectors.toList());
+        List<Loan> loans = loanService.getLoanByCreditFacilityIds(creditFacilityIds);
+
+        BigDecimal totalAmount  = loans
                 .stream().map(s-> s.getAmount())
                 .reduce(BigDecimal.valueOf(0), (x, y)-> x.add(y));
 
-        BigDecimal totalRemainAmount = creditFacility.getLoans()
+        BigDecimal totalRemainAmount = loans
                 .stream().map(s-> s.getRemainAmount())
                 .reduce(BigDecimal.valueOf(0), (x, y)-> x.add(y));
 

@@ -10,6 +10,7 @@ import sg.triquesta.model.dto.request.credit.CreditFacilityDto;
 import sg.triquesta.model.dto.request.loan.LoanTypeLimitDto;
 import sg.triquesta.model.entity.applicant.Applicant;
 import sg.triquesta.model.entity.credit.CreditFacility;
+import sg.triquesta.model.entity.enums.Currency;
 import sg.triquesta.model.entity.loan.LoanLimit;
 import sg.triquesta.model.entity.loan.LoanType;
 import sg.triquesta.repository.*;
@@ -38,7 +39,7 @@ public class CreditFacilityServiceImpl implements CreditFacilityService{
         BigDecimal totalLimitType = creditFacilityDto.getLoanTypeLimits()
             .stream().map(s -> s.getLimit()).reduce(BigDecimal.valueOf(0), (x, y) -> x.add(y));
 
-        if(totalLimitType.compareTo(creditFacilityDto.getTotalLimit()) > 0){
+        if(totalLimitType.compareTo(creditFacilityDto.getTotalLimit()) == 1){
             throw new BadRequestException("Total amount for each loan type must be less then total amount credit facility.");
         }
 
@@ -47,7 +48,7 @@ public class CreditFacilityServiceImpl implements CreditFacilityService{
         CreditFacility creditFacilityCreation = CreditFacility.builder()
                 .totalLimit(creditFacilityDto.getTotalLimit())
                 .applicant(applicant)
-                .currency(creditFacilityDto.getCurrency())
+                .currency(Currency.valueOf(creditFacilityDto.getCurrency()))
                 .startDate(creditFacilityDto.getStartDate())
                 .endDate(creditFacilityDto.getEndDate())
                 .build();
